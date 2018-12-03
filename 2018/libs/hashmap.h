@@ -1,3 +1,4 @@
+#include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -26,6 +27,8 @@ struct HashMap* new_hashmap()
 {
   struct HashMap* new = malloc(sizeof(struct HashMap));
 
+  memset(new->table, 0, sizeof(void*) * __HASH_MAP_TABLE_SIZE);
+
   return new;
 }
 
@@ -47,7 +50,7 @@ bool hashmap_has(struct HashMap* map, int key)
 
 void hashmap_put(struct HashMap* map, int key, void* value)
 {
-  int index = key % __HASH_MAP_TABLE_SIZE;
+  int index = abs(key) % __HASH_MAP_TABLE_SIZE;
 
   if (NULL == map->table[index]) {
     map->table[index] = _new_hashmap_node(key, value);
@@ -59,30 +62,29 @@ void hashmap_put(struct HashMap* map, int key, void* value)
         return;
       }
 
+      if (node->next == NULL) {
+        node->next = _new_hashmap_node(key, value);
+        return;
+      }
+
       node = node->next;
     }
-
-    node->next = _new_hashmap_node(key, value);
   }
 }
 
 void* hashmap_get(struct HashMap* map, int key)
 {
-  int index = key % __HASH_MAP_TABLE_SIZE;
-  
-  if (NULL == map->table[index]) {
-    return NULL;
-  } else {
-    struct HashMapNode* node = map->table[index];
+  int index = abs(key) % __HASH_MAP_TABLE_SIZE;
 
-    while (NULL != node) {
-      if (node->key == key) {
-        return node->value;
-      }
+  struct HashMapNode* node = map->table[index];
 
-      node = node->next;
+  while (NULL != node) {
+    if (node->key == key) {
+      return node->value;
     }
 
-    return NULL;
+    node = node->next;
   }
+
+  return NULL;
 }
