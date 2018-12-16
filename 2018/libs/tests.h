@@ -7,7 +7,7 @@ using namespace std;
 #define RUN_TESTS(func) printf("Test: " #func "\n"); \
   func();
 
-#define CASE(val) printf(" Case: %s\n", val);
+#define DESCRIBE(val) printf(" Case: %s\n", val);
 
 void assert_true(bool actual, char *msg)
 {
